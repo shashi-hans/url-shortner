@@ -16,7 +16,8 @@ const urlRoute = require("./routes/url");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true,}));
 
-app.use(cors());
+// cors
+app.use(cors({ origin: true, credentials: true }));
 // use Routes
 app.use("/api/url", urlRoute);
 
