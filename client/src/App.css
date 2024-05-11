@@ -144,7 +144,6 @@
     display:none;
   }
   .urlbox {
-    background-color: white;
     color:black;
     width:550px;
     padding: 20px;
@@ -156,9 +155,10 @@
     margin-top:10px;
     margin-bottom: 10px;
     border: 2px solid skyblue;
-    padding: 10px;
+    padding: 5px;
     border-radius: 5px;
     overflow: scroll;
+    background-color: white;
   }
   .short-url-box {
     display: flex;
@@ -171,13 +171,12 @@
     border-radius: 5px;
     background: #2c3e50;
     color: #FFC107;
-    width: 150px;
+    border-color: #FFC107;
   }
   .urlbox button:hover {
     cursor: pointer;
     background: #FFC107;
     color: #2c3e50;
-    border-color: #FFC107;
   }
   .error-msg {
     font-size: 12px;
