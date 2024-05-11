@@ -168,11 +168,15 @@
   .urlbox button {
     height: 47px;
     border-radius: 5px;
-    background: springgreen;
+    background: #2c3e50;
+    color: #FFC107;
     width: 150px;
   }
   .urlbox button:hover {
     cursor: pointer;
+    background: #FFC107;
+    color: #2c3e50;
+    border-color: #FFC107;
   }
   .error-msg {
     font-size: 12px;

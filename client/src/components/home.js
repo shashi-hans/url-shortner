@@ -8,7 +8,6 @@ function Home() {
   const [newUrl, setNewUrl] = useState('');
   const [copyTitle, setCopyTitle] = useState('Copy Short Url')
   const [showError, setShowError] = useState(false);
-console.log("isUrlCreated=",isUrlCreated)
   const onChange = (e) => {
     setInputUrl(e.target.value);
   };
