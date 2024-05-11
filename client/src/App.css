@@ -166,7 +166,8 @@
     align-items: center;
   }
   .urlbox button {
-    height: 47px;
+    height: 46px;
+    width: 150px;
     border-radius: 5px;
     background: #2c3e50;
     color: #FFC107;
