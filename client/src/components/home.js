@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../App.css';
 import axios from 'axios';
+import { fullURL }  from '../util';
 
 function Home() {
   const [inputUrl, setInputUrl] = useState('');
@@ -18,7 +19,7 @@ function Home() {
     var urlPattern = /^(https?:\/\/)?([\w-]+\.)*[\w-]+(\.[a-z]{2,})(:\d{1,5})?(\/\S*)?$/i;
     if (urlPattern.test(inputUrl)) {
       axios
-        .post('http://localhost:4000/api/url/shorten', { url: inputUrl }) // Pass the inputUrl value as an object
+        .post(fullURL, { url: inputUrl }) // Pass the inputUrl value as an object
         .then((res) => {
           console.log('Client response:', res.data); // Access the response data using `res.data`
           setisUrlCreated(true)
