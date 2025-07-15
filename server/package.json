@@ -1,0 +1,29 @@
+{
+  "name": "url-shortner-server",
+  "version": "1.0.0",
+  "description": "url shortning app",
+  "author": "shashi, shashihans87@gmail.com",
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "app": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "config": "^3.3.9",
+    "connect-mongo": "^5.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-session": "^1.17.1",
+    "http-errors": "^2.0.0",
+    "mongodb": "^5.6.0",
+    "mongoose": "^7.3.1",
+    "shortid": "^2.2.16",
+    "valid-url": "^1.0.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
