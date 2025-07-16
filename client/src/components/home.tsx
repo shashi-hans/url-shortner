@@ -3,7 +3,7 @@ import '../App.css';
 import axios from 'axios';
 import { fullURL }  from '../util';
 
-function Home() {
+const Home = () => {
   const [inputUrl, setInputUrl] = useState('');
   const [isUrlCreated, setisUrlCreated] = useState(false);
   const [newUrl, setNewUrl] = useState('');

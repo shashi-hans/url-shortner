@@ -1,6 +1,6 @@
 import {BrowserRouter as Router,Routes,Route,} from "react-router-dom";
 import "./App.css";
-import Home from "./components/home";
+import Home from "./components/home.tsx";
 
 const App = ()=> {
     return (
@@ -8,7 +8,7 @@ const App = ()=> {
         <Router>
           <div>
             <Routes>
-              <Route exact path="/" element={<Home />} />
+              <Route path="/" element={<Home />} />
             </Routes>
           </div>
         </Router>

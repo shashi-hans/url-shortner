@@ -7,7 +7,7 @@ const config = require('config');
 //const app = express();
 
 //  Load Url model
-const Url = require('../models/Url');
+const Url = require('../models/Model-Url');
 
 // @route POST api/url/test
 // @description Test url route

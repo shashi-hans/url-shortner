@@ -4,13 +4,13 @@ const bodyParser = require("body-parser");
 const createError = require("http-errors");
 const connectDB = require('./config/db');
 
-const Url = require('./models/Url');
+const Url = require('./models/Model-Url');
  
 // Express app
 const app = express();
 
 // Required Routes
-const urlRoute = require("./routes/url");
+const urlRoute = require("./routes/route-url");
 
 // Middleware
 app.use(bodyParser.json());
@@ -24,19 +24,26 @@ app.use("/api/url", urlRoute);
 // Connect Database
 connectDB();
 
-//redirect to original url
+//redirect to original url and update visit history
 app.get('/:shortId', async (req, res) => {
   try {
     const url = await Url.findOneAndUpdate(
       { shortId: req.params.shortId },
-      {$push: {
-        visitHistory: {
-          timestamp: Date.now(),
-        }}});
+      {
+        $push: {
+          visitHistory: {
+            timestamp: new Date(),
+          }
+        }
+      },
+      { new: true } // Return the updated document
+    );
 
     if (url) {
+      console.log("shortId visited >>>>>>", req.params.shortId);
       return res.redirect(url.originalUrl);
     } else {
+      console.log('No url found >>>>>', req.params.shortId);
       return res.status(404).json('No url found');
     }
   } catch (err) {
