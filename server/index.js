@@ -9,6 +9,9 @@ const Url = require('./models/Model-Url');
 // Express app
 const app = express();
 
+// cors
+app.use(cors({ origin: true, credentials: true }));
+
 // Required Routes
 const urlRoute = require("./routes/route-url");
 
@@ -16,13 +19,16 @@ const urlRoute = require("./routes/route-url");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true,}));
 
-// cors
-app.use(cors({ origin: true, credentials: true }));
 // use Routes
 app.use("/api/url", urlRoute);
 
 // Connect Database
 connectDB();
+
+// Visitor Routes
+const visitorRoutes = require('./routes/visitor');
+app.use('/api/visitor', visitorRoutes);
+
 
 //redirect to original url and update visit history
 app.get('/:shortId', async (req, res) => {
