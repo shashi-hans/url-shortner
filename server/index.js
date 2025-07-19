@@ -10,7 +10,17 @@ const Url = require('./models/Model-Url');
 const app = express();
 
 // cors
-app.use(cors({ origin: true, credentials: true }));
+// app.use(cors({ origin: true, credentials: true }));
+// Use CORS with custom origin
+app.use(cors({
+  origin: 'https://url-shortning.netlify.app/', // ✅ replace with your deployed frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors({ origin: true, credentials: true }));
+}
+app.options('*', cors());
 
 // Required Routes
 const urlRoute = require("./routes/route-url");
