@@ -53,7 +53,7 @@ const Home = () => {
         })
         .catch((err) => {
           console.log("Error in URL!", err);
-        });
+        })
         .finally(() => {
         setLoading(false); // Hide loading regardless of success or failure
       });
@@ -109,7 +109,7 @@ const Home = () => {
           </button>
         </div>
       </form>
-      {showError && <div className="error-msg">Invalid Url Format</div>}
+      {showError && <div className="error-msg">Invalid URL format. Please enter a valid web address.</div>}
       {isUrlCreated && (
         <div className="urlbox">
           <div className="short-url-box">
