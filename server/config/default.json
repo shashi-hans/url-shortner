@@ -1,4 +1,4 @@
 {
-    "mongoURI": "mongodb+srv://shashihans87:urlshortner_2023@cluster0.46dojzp.mongodb.net/?retryWrites=true&w=majority",
-    "baseUrl": "url-shortner-5wbk.onrender.com"
+    "mongoURI": "mongodb://127.0.0.1:27017/urldatabase",
+    "baseUrl": "localhost:4000"
   } 
