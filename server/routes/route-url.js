@@ -3,8 +3,6 @@ const router = express.Router();
 const validUrl = require('valid-url');
 const shortid = require('shortid');
 const config = require('config');
-//const bodyParser = require('body-parser');
-//const app = express();
 
 //  Load Url model
 const Url = require('../models/Model-Url');
