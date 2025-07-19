@@ -25,7 +25,7 @@ router.post('/shorten', async (req, res) => {
   // Check base url
   if (!validUrl.isUri(baseUrl)) {
     console.log('Invalid base url>>>',baseUrl);
-    return res.status(401).json('Invalid base url =',baseUrl);
+   return res.status(401).json({ error: `Invalid base URL: ${baseUrl}` });
   }
 
   // Check original url validity
