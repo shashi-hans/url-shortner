@@ -10,6 +10,7 @@ const Home = () => {
   const [copyTitle, setCopyTitle] = useState("Copy Short Url");
   const [showError, setShowError] = useState(false);
   const [visitorCount, setVisitorCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Increment visit count
@@ -36,6 +37,9 @@ const Home = () => {
     var urlPattern =
       /^(https?:\/\/)?([\w-]+\.)*[\w-]+(\.[a-z]{2,})(:\d{1,5})?(\/\S*)?$/i;
     if (urlPattern.test(inputUrl)) {
+      setLoading(true); // Show loading animation
+      setShowError(false); // Hide any previous error
+
       axios
         .post(fullURL, { url: inputUrl }) // Pass the inputUrl value as an object
         .then((res) => {
@@ -50,6 +54,9 @@ const Home = () => {
         .catch((err) => {
           console.log("Error in URL!", err);
         });
+        .finally(() => {
+        setLoading(false); // Hide loading regardless of success or failure
+      });
     } else {
       setShowError(true);
     }
@@ -91,12 +98,14 @@ const Home = () => {
             onFocus={() => {
               setShowError(false);
             }}
+            disabled={loading}
           />
           <button
             type="submit"
             className="btn btn-outline-warning btn-block mt-4 submit"
+            disabled={loading}
           >
-            Shorten Url
+            {loading ? 'Processing...' : 'Shorten URL'}
           </button>
         </div>
       </form>
@@ -116,6 +125,11 @@ const Home = () => {
             {inputUrl}
           </p>
           <button onClick={freshUrl}>Shorten Another Url</button>
+        </div>
+      )}
+      {loading && (
+        <div className="overlay">
+          <div className="spinner"></div>
         </div>
       )}
       <div>
