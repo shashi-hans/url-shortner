@@ -55,8 +55,8 @@ const Home = () => {
           console.log("Error in URL!", err);
         })
         .finally(() => {
-        setLoading(false); // Hide loading regardless of success or failure
-      });
+          setLoading(false); // Hide loading regardless of success or failure
+        });
     } else {
       setShowError(true);
     }
@@ -105,23 +105,25 @@ const Home = () => {
             className="btn btn-outline-warning btn-block mt-4 submit"
             disabled={loading}
           >
-            {loading ? 'Processing...' : 'Shorten URL'}
+            {loading ? "Processing..." : "Shorten URL"}
           </button>
         </div>
       </form>
-      {showError && <div className="error-msg">Invalid URL format. Please enter a valid web address.</div>}
+      {showError && (
+        <div className="error-msg">
+          Invalid URL format. Please enter a valid web address.
+        </div>
+      )}
       {isUrlCreated && (
         <div className="urlbox">
-          <div className="short-url-box">
-            <p>
-              <b>Short Url : </b>
-              {newUrl}{" "}
-            </p>
-            <button onClick={copyToClipboard}> {copyTitle} </button>
-          </div>
+          <p>
+            <span className="b">Short Url : </span>
+            {newUrl}{" "}
+          </p>
+          <button onClick={copyToClipboard}> {copyTitle} </button>
           <p>
             {" "}
-            <b>Original Url : </b>
+            <span className="b">Original Url : </span>
             {inputUrl}
           </p>
           <button onClick={freshUrl}>Shorten Another Url</button>

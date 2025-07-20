@@ -10,6 +10,8 @@ const Url = require('./models/Model-Url');
 const app = express();
 
 const isProduction = process.env.NODE_ENV === 'production';
+console.log("environment ==========",process.env.NODE_ENV)
+console.log("isProduction ==========",isProduction)
 
 const allowedOrigin = isProduction
   ? 'https://url-shortning.netlify.app'

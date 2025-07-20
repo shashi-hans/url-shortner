@@ -157,8 +157,11 @@
     border: 2px solid skyblue;
     padding: 5px;
     border-radius: 5px;
-    overflow: scroll;
     background-color: white;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
   }
   .short-url-box {
     display: flex;
@@ -166,12 +169,13 @@
     align-items: center;
   }
   .urlbox button {
-    height: 47px;
+    height: 30px;
     width: 150px;
     border-radius: 5px;
     background: #2c3e50;
     color: #FFC107;
     border-color: #FFC107;
+    margin-bottom: 20px;
   }
   .urlbox button:hover {
     cursor: pointer;
@@ -236,4 +240,7 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+.b {
+  font-weight: bold;
 }
