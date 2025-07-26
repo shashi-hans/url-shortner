@@ -135,8 +135,17 @@ const Home = () => {
         </div>
       )}
       <div>
-        <p>Total Visitors: {visitorCount}</p>
-      </div>
+        <p>
+          Total Visitors:{" "}
+          {visitorCount === 0 ? (
+            <span className="overlay">
+              <span className="spinner"></span>
+            </span>
+          ) : (
+            visitorCount
+          )}
+        </p>
+      </div> 
     </div>
   );
 };
