@@ -1,24 +1,34 @@
-How to start
+URL Shortener (MongoDB, Express, React, Node)
 
-#Open terminal,make folder 'url-shortner'- `mkdir url-shortner`
-#Make 4 more folders - `mkdir config model request routes`
-#Change node version to 18 - `nvm use 18`
-#Make Package json file - `npm install`
-Change name if want, Enter your name as author, In Keyword press '[]' ,In rest options just press enter key for default.
-#Install Backend packages - `<npm install>/<yarn add> bodyParser shortid cors config express mongoose/postgres shortid valid-url`
-#Install nodemon - `npm install --save-dev nodemon`
-#Install Frontend packages - `<npm install>/<yarn add> axios react-router-dom react-scripts react`
-# Edit the default.json file with your mongoURI and baseUrl
-# Use production.json in production env
+Requirements
+- Node 22 (`nvm use`, reads .nvmrc)
+- MongoDB; locally server/config/default.json points to mongodb://127.0.0.1:27017/urldatabase
 
-# Run  `npm start` for both client and server terminal,  before run use `nvm use 18`
-# client   http://localhost:3000/
-# server   http://localhost:4000/
+Run locally (two terminals)
+- server: `cd server && npm install && npm start`   (http://localhost:4000, `npm run app` restarts on file changes)
+- client: `cd client && npm install && npm start`   (http://localhost:3000, Vite forwards /api to the server)
 
-## What technologies are used for this project?
+Tests
+- server: `cd server && npm test`   (route tests with the database stubbed; no MongoDB needed)
 
-This project is built with (MERN):
-React.js
-Node.js
-Express.js
-Mongodb
+Production
+- Server host: set NODE_ENV=production and MONGO_URI (MongoDB connection string).
+  BASE_URL is optional and overrides baseUrl in production.json.
+  Never put the connection string in a config file; config/custom-environment-variables.json maps the env vars.
+- Client build (Netlify): build command `npm run build`, publish directory `build`.
+  The API origin comes from client/.env.production (VITE_API_URL, read at build time);
+  a VITE_API_URL env var set on Netlify overrides it.
+- Rate limits per IP, 15 minute window: 30 calls to /api/url/shorten, 20 calls to /api/visitor/visit,
+  30 unknown short codes on GET /<code> (successful redirects are not counted).
+- Short codes: new links get 6 characters; older 7-14 character codes keep working.
+
+npm package (CLI)
+- server/ is published as @shashi-hans/url-shortner; `npx @shashi-hans/url-shortner --help` (usage in server/README.md).
+- `npm pack` / `npm publish` in server/ first builds the client into server/public (prepack), which the
+  server then serves on the same port. server/public is gitignored.
+- Publish: `cd server && npm login && npm publish` (publishConfig.access is public). Bump "version" first on each release.
+
+Database migration (once, before deploying the unique originalUrl index)
+- `cd server && NODE_ENV=production MONGO_URI=... npm run migrate:unique-url`
+  Lists duplicate originalUrl documents and stops if any exist; otherwise swaps the
+  old originalUrl_1 index for a unique one.

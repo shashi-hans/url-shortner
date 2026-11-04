@@ -1,7 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../App.css";
 import axios from "axios";
 import { fullURL, baseUrl } from "../util";
+
+const isParseableUrl = (value) => {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 const Home = () => {
   const [inputUrl, setInputUrl] = useState("");
@@ -9,10 +18,18 @@ const Home = () => {
   const [newUrl, setNewUrl] = useState("");
   const [copyTitle, setCopyTitle] = useState("Copy Short Url");
   const [showError, setShowError] = useState(false);
-  const [visitorCount, setVisitorCount] = useState(0);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [visitorCount, setVisitorCount] = useState(null);
   const [loading, setLoading] = useState(false);
+  // React StrictMode runs effects twice in development; count each page load once
+  const visitCounted = useRef(false);
+  const copyTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
 
   useEffect(() => {
+    if (visitCounted.current) return;
+    visitCounted.current = true;
     // Increment visit count
     axios
       .post(`${baseUrl}/api/visitor/visit`)
@@ -23,7 +40,8 @@ const Home = () => {
         // fallback to just get count
         axios
           .get(`${baseUrl}/api/visitor/count`)
-          .then((res) => setVisitorCount(res.data.count));
+          .then((res) => setVisitorCount(res.data.count))
+          .catch(() => setVisitorCount("-"));
       });
   }, []);
 
@@ -33,31 +51,31 @@ const Home = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    // Regular expression to match URLs
-    var urlPattern =
-      /^(https?:\/\/)?([\w-]+\.)*[\w-]+(\.[a-z]{2,})(:\d{1,5})?(\/\S*)?$/i;
-    if (urlPattern.test(inputUrl)) {
+    const trimmedUrl = inputUrl.trim();
+    // The server accepts only absolute http(s) URLs, so add a scheme when the user typed "example.com".
+    // The server does the full validation; this check only catches empty or unparseable input early.
+    const fullInputUrl = /^https?:\/\//i.test(trimmedUrl) ? trimmedUrl : `https://${trimmedUrl}`;
+    if (trimmedUrl && !/\s/.test(trimmedUrl) && isParseableUrl(fullInputUrl)) {
+      setInputUrl(fullInputUrl);
       setLoading(true); // Show loading animation
       setShowError(false); // Hide any previous error
 
       axios
-        .post(fullURL, { url: inputUrl }) // Pass the inputUrl value as an object
+        .post(fullURL, { url: fullInputUrl })
         .then((res) => {
-          console.log("Client response:", res.data); // Access the response data using `res.data`
           setisUrlCreated(true);
-          if (res.data._id) {
-            setNewUrl(res.data.shortUrl);
-          } else {
-            setNewUrl(res.data);
-          }
+          setNewUrl(res.data.shortUrl);
         })
         .catch((err) => {
-          console.log("Error in URL!", err);
+          console.error("Error in URL!", err);
+          setErrorMsg(err.response?.data?.error || "Could not shorten the URL. Please try again.");
+          setShowError(true);
         })
         .finally(() => {
           setLoading(false); // Hide loading regardless of success or failure
         });
     } else {
+      setErrorMsg("Invalid URL format. Please enter a valid web address.");
       setShowError(true);
     }
   };
@@ -65,8 +83,9 @@ const Home = () => {
     try {
       await navigator.clipboard.writeText(newUrl);
       setCopyTitle("Copied...");
-      //make settimeout of 5sec to reset copytitle to 'Copy Short Url'
-      setTimeout(() => {
+      // Reset the button label after 5 seconds
+      clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => {
         setCopyTitle("Copy Short Url");
       }, 5000);
     } catch (err) {
@@ -111,7 +130,7 @@ const Home = () => {
       </form>
       {showError && (
         <div className="error-msg">
-          Invalid URL format. Please enter a valid web address.
+          {errorMsg}
         </div>
       )}
       {isUrlCreated && (
@@ -137,7 +156,7 @@ const Home = () => {
       <div>
         <p className='visitor'>
           Total Visitors:{" "}
-          {visitorCount === 0 ? (
+          {visitorCount === null ? (
             <span className="overlay2">
               <span className="spinner2"></span>
             </span>

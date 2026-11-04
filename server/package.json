@@ -1,29 +1,60 @@
 {
-  "name": "url-shortner-server",
+  "name": "@shashi-hans/url-shortner",
   "version": "1.0.0",
-  "description": "url shortning app",
-  "author": "shashi, shashihans87@gmail.com",
+  "description": "Self-hosted URL shortener: run one command to start the web app and API (needs MongoDB)",
+  "keywords": [
+    "url-shortener",
+    "short-url",
+    "cli",
+    "express",
+    "mongodb"
+  ],
+  "author": "shashi <shashihans87@gmail.com>",
   "license": "ISC",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shashi-hans/url-shortner.git",
+    "directory": "server"
+  },
+  "homepage": "https://github.com/shashi-hans/url-shortner#readme",
+  "bugs": {
+    "url": "https://github.com/shashi-hans/url-shortner/issues"
+  },
+  "bin": {
+    "url-shortner": "bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "app.js",
+    "index.js",
+    "config/",
+    "models/",
+    "routes/",
+    "public/"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "node index.js",
-    "app": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "app": "node --watch index.js",
+    "test": "node --test",
+    "migrate:unique-url": "node scripts/migrate-unique-originalUrl.js",
+    "build:client": "npm --prefix ../client ci && npm --prefix ../client run build -- --mode package --outDir ../server/public --emptyOutDir",
+    "prepack": "npm run build:client"
   },
   "dependencies": {
-    "body-parser": "^1.20.2",
     "config": "^3.3.9",
-    "connect-mongo": "^5.0.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "express-session": "^1.17.1",
+    "express-rate-limit": "7.5.1",
     "http-errors": "^2.0.0",
-    "mongodb": "^5.6.0",
-    "mongoose": "^7.3.1",
-    "shortid": "^2.2.16",
-    "valid-url": "^1.0.9"
+    "mongoose": "^7.3.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "supertest": "7.1.1"
   }
 }
