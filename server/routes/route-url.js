@@ -1,62 +1,62 @@
 const express = require('express');
 const router = express.Router();
-const validUrl = require('valid-url');
-const shortid = require('shortid');
+const crypto = require('crypto');
 const config = require('config');
 
 //  Load Url model
 const Url = require('../models/Model-Url');
 
-// @route POST api/url/test
-// @description Test url route
-// @access Public
-router.post('/test', (req, res) => {
-  res.send('Hello World!');
-});
+const MAX_URL_LENGTH = 2048;
+const MAX_INSERT_ATTEMPTS = 3;
+const DUPLICATE_KEY = 11000;
 
-// @route     http://localhost:4000/api/url/shorten
-// @desc      Create short URL
+// 6 base64url characters (A-Z, a-z, 0-9, _ and -), 2^36 (about 68.7 billion) possible codes.
+// 6 random bytes encode to 8 characters; each character carries 6 independent random bits, so the first 6 stay uniform.
+const SHORT_ID_LENGTH = 6;
+const generateShortId = () => crypto.randomBytes(6).toString('base64url').slice(0, SHORT_ID_LENGTH);
+
+// Returns the parsed URL for http(s) input, or null. Blocks javascript:, data:, file: and similar schemes.
+const parseHttpUrl = (value) => {
+  if (typeof value !== 'string' || value.length > MAX_URL_LENGTH) return null;
+  try {
+    const parsed = new URL(value.trim());
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+// @route     POST /api/url/shorten
+// @desc      Create short URL, or return the existing one for the same original URL
 router.post('/shorten', async (req, res) => {
-  const originalUrl = req.body.url;
   const baseUrl = config.get('baseUrl');
-
-  console.log('originalUrl >>>', originalUrl);
-
-  // Check base url
-  if (!validUrl.isUri(baseUrl)) {
-    console.log('Invalid base url>>>',baseUrl);
-   return res.status(401).json({ error: `Invalid base URL: ${baseUrl}` });
+  if (!parseHttpUrl(baseUrl)) {
+    console.error('Invalid base url>>>', baseUrl);
+    return res.status(500).json({ error: 'Server misconfigured' });
   }
 
-  // Check original url validity
-  if (validUrl.isUri(originalUrl)) {
-    try {//Check if input url is already present in DB
-      let url = await Url.findOne({ originalUrl }); 
-      if (url) {
-        console.log("<<<<<<< Url Already Present >>>>>>>>>")
-        res.json(url);
-      } else {//If input url not present in DB
-        // Create Short url code
-        const shortId = shortid.generate();
-        console.log('shortid >>>', shortId);
-        const shortUrl = baseUrl + '/' + shortId;
+  const parsed = parseHttpUrl(req.body?.url);
+  if (!parsed) {
+    return res.status(400).json({ error: 'Invalid Url Provided' });
+  }
+  const originalUrl = parsed.href;
 
-        url = new Url({
-          shortId: shortId,
-          shortUrl: shortUrl,
-          originalUrl: originalUrl,
-          date: Date.now(),
-        });
-       await url.save();
-       console.log('shortUrl >>>', shortUrl);
-        return res.json(shortUrl);
-      }
+  // A duplicate-key error means either a concurrent request inserted the same originalUrl
+  // (the next attempt finds it) or the random shortId collided (the next attempt draws a new one).
+  for (let attempt = 1; attempt <= MAX_INSERT_ATTEMPTS; attempt++) {
+    const shortId = generateShortId();
+    try {
+      const url = await Url.findOneAndUpdate(
+        { originalUrl },
+        { $setOnInsert: { shortId, shortUrl: `${baseUrl}/${shortId}`, originalUrl } },
+        { new: true, upsert: true, projection: { shortUrl: 1 } }
+      );
+      return res.json({ shortUrl: url.shortUrl });
     } catch (err) {
+      if (err?.code === DUPLICATE_KEY && attempt < MAX_INSERT_ATTEMPTS) continue;
       console.error(err);
-      res.status(500).json('Server error');
+      return res.status(500).json({ error: 'Server error' });
     }
-  } else {
-    res.status(401).json('Invalid Url Provided');
   }
 });
 
